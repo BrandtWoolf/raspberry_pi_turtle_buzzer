@@ -1,0 +1,47 @@
+---
+- name: Deploy and run alarm buzzer as systemd service
+  hosts: raspberrypi
+  become: yes
+
+  vars:
+    service_user: bwoolf
+    script_dest: /home/bwoolf/buzzer.py
+    service_name: alarm-buzzer
+
+  tasks:
+    - name: Copy alarm buzzer script
+      copy:
+        src: buzzer.py
+        dest: "{{ script_dest }}"
+        owner: "{{ service_user }}"
+        group: "{{ service_user }}"
+        mode: '0755'
+
+    - name: Create systemd service unit
+      copy:
+        dest: /etc/systemd/system/{{ service_name }}.service
+        content: |
+          [Unit]
+          Description=Raspberry Pi Alarm Buzzer Toggle
+          After=network.target
+
+          [Service]
+          Type=simple
+          ExecStart=/usr/bin/python3 {{ script_dest }}
+          User={{ service_user }}
+          WorkingDirectory=/home/pi
+          Restart=on-failure
+
+          [Install]
+          WantedBy=multi-user.target
+      notify: Reload systemd
+
+    - name: Enable and start the alarm buzzer service
+      systemd:
+        name: "{{ service_name }}"
+        enabled: yes
+        state: started
+
+  handlers:
+    - name: Reload systemd
+      command: systemctl daemon-reload
