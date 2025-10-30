@@ -11,18 +11,15 @@ GPIO.setup(SWITCH_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 buzzer_on = False
 last_switch_state = GPIO.input(SWITCH_PIN)
 
-# Set up PWM (start at 1kHz, duty 50%)
-pwm = GPIO.PWM(BUZZER_PIN, 1000)
-pwm_started = False
+# Siren parameters
+freq = 1000
+direction = 1  # 1 = up, -1 = down
+min_freq = 1000
+max_freq = 2500
+step = 50
 
-def play_siren():
-    # Sweep frequencies between 1000 Hz and 2500 Hz
-    for freq in range(1000, 2500, 50):
-        pwm.ChangeFrequency(freq)
-        time.sleep(0.01)
-    for freq in range(2500, 1000, -50):
-        pwm.ChangeFrequency(freq)
-        time.sleep(0.01)
+pwm = GPIO.PWM(BUZZER_PIN, freq)
+pwm_started = False
 
 print("Press the switch to toggle the buzzer siren on/off. Ctrl+C to exit.")
 
@@ -34,16 +31,21 @@ try:
             if buzzer_on:
                 pwm.start(50)  # Start PWM at 50% duty
                 pwm_started = True
+                print("Buzzer ON")
             else:
                 pwm.stop()
                 pwm_started = False
-            print("Buzzer ON" if buzzer_on else "Buzzer OFF")
-            time.sleep(0.2)
+                print("Buzzer OFF")
+            time.sleep(0.2)  # Debounce delay
         last_switch_state = current_switch_state
 
-        # Play siren if buzzer is on
+        # Non-blocking siren logic
         if buzzer_on and pwm_started:
-            play_siren()
+            pwm.ChangeFrequency(freq)
+            freq += direction * step
+            if freq >= max_freq or freq <= min_freq:
+                direction *= -1  # Change sweep direction
+            time.sleep(0.01)
         else:
             time.sleep(0.01)
 
