@@ -6,7 +6,7 @@ Simple GPIO code for a raspberry pi 4 b to mimic the sound of a Lowes "turtle" a
   Your browser does not support the audio element.
 </audio>
 
-![Example](./images/example.png)
+<img src="./images/example.png" alt="Example" width="50%">
 
 # Pinout
 
