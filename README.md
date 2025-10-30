@@ -1,2 +1,24 @@
 # raspberry_pi_turtle_buzzer
 Simple GPIO code for a raspberry pi 4 b to mimic the sound of a Lowes "turtle" alarm
+
+
+# Pinout
+
+Raspberry Pi 4 GPIO Header (Top View, Pins 1-20)
+ -----------------------------------------------------
+| 1  3V3    2  5V                                    |
+| 3  GPIO2  4  5V                                    |
+| 5  GPIO3  6  GND  o<---+-----[Buzzer -]            |
+| 7  GPIO4  8  GPIO14     |                          |
+| 9  GND    10 GPIO15     |                          |
+|11 GPIO17 12 GPIO18------+-----[Buzzer +]           |
+|   |        |                                       |
+|   +-----[Switch]                                   |
+|         |                                          |
+|         +-------------------o GND (any GND pin)    |
+ -----------------------------------------------------
+
+Components:
+- [Buzzer +]: Connect to GPIO18 (pin 12)
+- [Buzzer -]: Connect to GND (pin 6)
+- [Switch]: One side to GPIO17 (pin 11), other side to any GND (e.g., pin 9)
