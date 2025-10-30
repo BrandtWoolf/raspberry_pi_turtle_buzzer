@@ -1,11 +1,18 @@
 # raspberry_pi_turtle_buzzer
 Simple GPIO code for a raspberry pi 4 b to mimic the sound of a Lowes "turtle" alarm
 
+## Example Audio
 ![Audio](./audio/sample_audio.m4a)
+
+## Inspiration
+![Example](./images/turtle.png)
+
+## Implimentation Example
 
 ![Example](./images/example.png)
 
-# Pinout
+
+# Raspberry Pi Pinout
 
 ```
 Raspberry Pi 4 GPIO Header (Top View, Pins 1-20)
@@ -28,7 +35,7 @@ Components:
 - [Switch]: One side to GPIO17 (pin 11), other side to any GND (e.g., pin 9)
 ```
 
-# Install
+# Deploy
 
 Install Ansible and run the following command
 
