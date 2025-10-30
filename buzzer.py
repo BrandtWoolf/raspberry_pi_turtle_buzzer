@@ -11,16 +11,17 @@ GPIO.setup(SWITCH_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 buzzer_on = False
 last_switch_state = GPIO.input(SWITCH_PIN)
 
-pwm = GPIO.PWM(BUZZER_PIN, 2500)  # Set to a sharp beep frequency
+# Siren parameters
+freq = 1000
+direction = 1  # 1 = up, -1 = down
+min_freq = 1000
+max_freq = 2500
+step = 50
+
+pwm = GPIO.PWM(BUZZER_PIN, freq)
 pwm_started = False
 
-# Chirp pattern timings (seconds)
-BEEP_FREQ = 2500       # Hz
-BEEP_DURATION = 0.12   # Beep length
-BEEP_GAP = 0.12        # Gap between two beeps
-CYCLE_PAUSE = 0.5      # Pause between chirp cycles
-
-print("Press the switch to toggle the buzzer alarm on/off. Ctrl+C to exit.")
+print("Press the switch to toggle the buzzer siren on/off. Ctrl+C to exit.")
 
 try:
     while True:
@@ -28,35 +29,25 @@ try:
         if last_switch_state == 1 and current_switch_state == 0:
             buzzer_on = not buzzer_on
             if buzzer_on:
+                pwm.start(50)  # Start PWM at 50% duty
+                pwm_started = True
                 print("Buzzer ON")
             else:
+                pwm.stop()
+                pwm_started = False
                 print("Buzzer OFF")
-                if pwm_started:
-                    pwm.stop()
-                    pwm_started = False
-            time.sleep(0.2)  # Debounce
+            time.sleep(0.2)  # Debounce delay
         last_switch_state = current_switch_state
 
-        # Chirp pattern if buzzer is on
-        if buzzer_on:
-            pwm.ChangeFrequency(BEEP_FREQ)
-            if not pwm_started:
-                pwm.start(50)
-                pwm_started = True
-            # First beep
-            pwm.ChangeFrequency(BEEP_FREQ)
-            pwm.start(50)
-            time.sleep(BEEP_DURATION)
-            pwm.stop()
-            time.sleep(BEEP_GAP)
-            # Second beep
-            pwm.start(50)
-            time.sleep(BEEP_DURATION)
-            pwm.stop()
-            # Pause before next cycle
-            time.sleep(CYCLE_PAUSE)
+        # Non-blocking siren logic
+        if buzzer_on and pwm_started:
+            pwm.ChangeFrequency(freq)
+            freq += direction * step
+            if freq >= max_freq or freq <= min_freq:
+                direction *= -1  # Change sweep direction
+            time.sleep(0.01)
         else:
-            time.sleep(0.05)
+            time.sleep(0.01)
 
 except KeyboardInterrupt:
     print("Exiting...")
