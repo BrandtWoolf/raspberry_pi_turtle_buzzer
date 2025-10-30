@@ -22,3 +22,14 @@ Components:
 - [Buzzer +]: Connect to GPIO18 (pin 12)
 - [Buzzer -]: Connect to GND (pin 6)
 - [Switch]: One side to GPIO17 (pin 11), other side to any GND (e.g., pin 9)
+
+
+# Install
+
+Install Ansible and run the following command
+
+```
+ansible-playbook -i $YOUR_PI_IP, $ scripts/deploy.yml -e service_user=$YOUR_PI_USERNAME
+```
+
+* Note the comma at the end of the ip address. If not present it will not work
